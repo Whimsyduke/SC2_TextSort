@@ -4,9 +4,65 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SC2_TextSort"
+        xmlns:excel="http://propertytools.org/wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="SC2_TextSort" Height="768" Width="1366">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="70"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+            <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" Margin="3"/>
+            <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Content="Path"/>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="70"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Text Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+            <TextBox Name="TextBox_TextPath" Grid.Column="1" Margin="3"/>
+            <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Content="Path"/>
+        </Grid>
+        <excel:DataGrid Name="DataGrid_TranslateGird" 
+                        Grid.Column="0" 
+                        Grid.ColumnSpan="2" 
+                        Grid.Row="1" 
+                        CanResizeColumns="True" 
+                        CanResizeRows="True" 
+                        DefaultHorizontalAlignment="Left" 
+                        WrapItems="True"
+                        CanInsert="True"
+                        ItemsSource="{Binding ItemSource}">
+            <excel:DataGrid.ColumnDefinitions>
+                <excel:ColumnDefinition PropertyName="ColumnDefinition_TextID">
+                    <excel:ColumnDefinition.Header>
+                        <TextBlock FontStyle="Italic">Text ID</TextBlock>
+                    </excel:ColumnDefinition.Header>
+                </excel:ColumnDefinition>
+                <excel:ColumnDefinition PropertyName="ColumnDefinition_zh_CNText">
+                    <excel:ColumnDefinition.Header>
+                        <TextBlock FontStyle="Italic">zh-CN Text</TextBlock>
+                    </excel:ColumnDefinition.Header>
+                </excel:ColumnDefinition>
+                <excel:ColumnDefinition PropertyName="ColumnDefinition_en_USText">
+                    <excel:ColumnDefinition.Header>
+                        <TextBlock FontStyle="Italic">en-US Text</TextBlock>
+                    </excel:ColumnDefinition.Header>
+                </excel:ColumnDefinition>
+            </excel:DataGrid.ColumnDefinitions>
+        </excel:DataGrid>
     </Grid>
 </Window>

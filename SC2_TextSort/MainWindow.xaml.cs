@@ -23,6 +23,7 @@ namespace SC2_TextSort
         public MainWindow()
         {
             InitializeComponent();
+            var v = DataGrid_TranslateGird.ItemsSource;
         }
     }
 }
