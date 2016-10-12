@@ -6,63 +6,28 @@
         xmlns:local="clr-namespace:SC2_TextSort"
         xmlns:excel="http://propertytools.org/wpf"
         mc:Ignorable="d"
-        Title="SC2_TextSort" Height="768" Width="1366">
+        Title="SC2_TextSort" Height="120" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="70"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
-            <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" Margin="3"/>
-            <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Content="Path"/>
-        </Grid>
-        <Grid Grid.Column="1" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="70"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Text Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
-            <TextBox Name="TextBox_TextPath" Grid.Column="1" Margin="3"/>
-            <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Content="Path"/>
-        </Grid>
-        <excel:DataGrid Name="DataGrid_TranslateGird" 
-                        Grid.Column="0" 
-                        Grid.ColumnSpan="2" 
-                        Grid.Row="1" 
-                        CanResizeColumns="True" 
-                        CanResizeRows="True" 
-                        DefaultHorizontalAlignment="Left" 
-                        WrapItems="True"
-                        CanInsert="True"
-                        ItemsSource="{Binding ItemSource}">
-            <excel:DataGrid.ColumnDefinitions>
-                <excel:ColumnDefinition PropertyName="ColumnDefinition_TextID">
-                    <excel:ColumnDefinition.Header>
-                        <TextBlock FontStyle="Italic">Text ID</TextBlock>
-                    </excel:ColumnDefinition.Header>
-                </excel:ColumnDefinition>
-                <excel:ColumnDefinition PropertyName="ColumnDefinition_zh_CNText">
-                    <excel:ColumnDefinition.Header>
-                        <TextBlock FontStyle="Italic">zh-CN Text</TextBlock>
-                    </excel:ColumnDefinition.Header>
-                </excel:ColumnDefinition>
-                <excel:ColumnDefinition PropertyName="ColumnDefinition_en_USText">
-                    <excel:ColumnDefinition.Header>
-                        <TextBlock FontStyle="Italic">en-US Text</TextBlock>
-                    </excel:ColumnDefinition.Header>
-                </excel:ColumnDefinition>
-            </excel:DataGrid.ColumnDefinitions>
-        </excel:DataGrid>
+        <TextBlock Text="Galaxy Path:" Grid.Column="0" Grid.Row="0" Margin="3" VerticalAlignment="Center"/>
+        <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" Grid.Row="0" Margin="3"/>
+        <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Grid.Row="0" Margin="3" Padding="5" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
+        <TextBlock Text="Text Path:" Grid.Column="0" Grid.Row="1" Margin="3" VerticalAlignment="Center"/>
+        <TextBox Name="TextBox_TextPath" Grid.Column="1" Grid.Row="1" Margin="3"/>
+        <Button Name="Button_SelectTextPath" Grid.Column="2" Grid.Row="1" Margin="3" Padding="5" Content="Path"/>
+        <TextBlock Text="Output Path:" Grid.Column="0" Grid.Row="2" Margin="3" VerticalAlignment="Center"/>
+        <TextBox Name="TextBox_OutputPath" Grid.Column="1" Grid.Row="2" Margin="3"/>
+        <Button Name="Button_SelectOutputPath" Grid.Column="2" Grid.Row="2" Margin="3" Padding="5" Content="Path" Click="Button_SelectOutputPath_Click_1"/>
+        <Button Name="Button_Confirm" Grid.Column="3" Grid.Row="0" Grid.RowSpan="3" Margin="3" Padding="5" Content="Confirm"/>
     </Grid>
 </Window>
