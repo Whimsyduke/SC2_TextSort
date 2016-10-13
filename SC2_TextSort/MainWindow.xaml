@@ -6,28 +6,72 @@
         xmlns:local="clr-namespace:SC2_TextSort"
         xmlns:excel="http://propertytools.org/wpf"
         mc:Ignorable="d"
-        Title="SC2_TextSort" Height="120" Width="800">
+        Title="SC2_TextSort" Height="194.5" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="70"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Text="Galaxy Path:" Grid.Column="0" Grid.Row="0" Margin="3" VerticalAlignment="Center"/>
-        <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" Grid.Row="0" Margin="3"/>
-        <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Grid.Row="0" Margin="3" Padding="5" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
-        <TextBlock Text="Text Path:" Grid.Column="0" Grid.Row="1" Margin="3" VerticalAlignment="Center"/>
-        <TextBox Name="TextBox_TextPath" Grid.Column="1" Grid.Row="1" Margin="3"/>
-        <Button Name="Button_SelectTextPath" Grid.Column="2" Grid.Row="1" Margin="3" Padding="5" Content="Path"/>
-        <TextBlock Text="Output Path:" Grid.Column="0" Grid.Row="2" Margin="3" VerticalAlignment="Center"/>
-        <TextBox Name="TextBox_OutputPath" Grid.Column="1" Grid.Row="2" Margin="3"/>
-        <Button Name="Button_SelectOutputPath" Grid.Column="2" Grid.Row="2" Margin="3" Padding="5" Content="Path" Click="Button_SelectOutputPath_Click_1"/>
-        <Button Name="Button_Confirm" Grid.Column="3" Grid.Row="0" Grid.RowSpan="3" Margin="3" Padding="5" Content="Confirm"/>
+        <GroupBox Header="Operation Mode" Grid.Row="0" Margin="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="0" GroupName="Mode" Content="Generation CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
+                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" GroupName="Mode" Content="Generation Txt" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="PathSeting"  Grid.Row="1" Margin="3">
+            <StackPanel Name="StackPanel_Main" Orientation="Vertical">
+                <Grid Name="Grid_GalaxyPath"  Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
+                </Grid>
+                <Grid Name="Grid_TextPath">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Text Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_TextPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectTextPath_Click"/>
+                </Grid>
+
+                <Grid Name="Grid_InputPath">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Input Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_InputPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_SelectInputPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectInputPath_Click"/>
+                </Grid>
+                <Grid Name="Grid_OutputPath" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Output Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_OutputPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_SelectOutputPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectOutputPath_Click"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+        <Button Name="Button_Confirm" Grid.Row="2" Grid.RowSpan="3" Margin="3" Padding="3" Content="Confirm" Click="Button_Confirm_Click"/>
     </Grid>
 </Window>

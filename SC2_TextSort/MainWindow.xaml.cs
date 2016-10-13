@@ -21,6 +21,30 @@ namespace SC2_TextSort
     /// </summary>
     public partial class MainWindow : Window
     {
+        private enum OperationMode
+        {
+            CSV,
+            TXT,
+        }
+
+        private OperationMode opMode = OperationMode.TXT;
+        private List<TextInGalaxyCodeLine> galaxyCodeText;
+        /// <summary>
+        /// Galaxy脚本及包含Text列表
+        /// </summary>
+        public List<TextInGalaxyCodeLine> GalaxyCodeText
+        {
+            get
+            {
+                return galaxyCodeText;
+            }
+
+            set
+            {
+                galaxyCodeText = value;
+            }
+        }
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -104,6 +128,34 @@ namespace SC2_TextSort
                 return null;
             }
         }
+        
+        /// <summary>
+        /// 点击生成CSV模式
+        /// </summary>
+        /// <param name="sender">想用控件</param>
+        /// <param name="e">响应事件</param>
+        private void RadioButton_ToCsvFile_Checked(object sender, RoutedEventArgs e)
+        {
+            Grid_GalaxyPath.Visibility = Visibility.Visible;
+            Grid_TextPath.Visibility = Visibility.Visible;
+            Grid_InputPath.Visibility = Visibility.Collapsed;
+            Grid_OutputPath.Visibility = Visibility.Visible;
+            this.Height = 180;
+        }
+
+        /// <summary>
+        /// 点击生成TXT模式
+        /// </summary>
+        /// <param name="sender">想用控件</param>
+        /// <param name="e">响应事件</param>
+        private void RadioButton_ToTxtFile_Checked(object sender, RoutedEventArgs e)
+        {
+            Grid_GalaxyPath.Visibility = Visibility.Collapsed;
+            Grid_TextPath.Visibility = Visibility.Visible;
+            Grid_InputPath.Visibility = Visibility.Visible;
+            Grid_OutputPath.Visibility = Visibility.Collapsed;
+            this.Height = 224.5;
+        }
 
         /// <summary>
         /// 点击选择Galaxy文件的路径按钮
@@ -113,6 +165,7 @@ namespace SC2_TextSort
         private void Button_SelectGalaxyPath_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialogGetOpenFile(TextBox_GalaxyPath, "Galaxy File|*.galaxy", "Select Galaxy File");
+            this.Height = 224.5;
         }
 
         /// <summary>
@@ -120,9 +173,19 @@ namespace SC2_TextSort
         /// </summary>
         /// <param name="sender">想用控件</param>
         /// <param name="e">响应事件</param>
-        private void Button_SelectOutputPath_Click(object sender, RoutedEventArgs e)
+        private void Button_SelectTextPath_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialogGetOpenFile(TextBox_TextPath, "Text File|*.txt|CSV File|*.csv", "Select Test File");
+            OpenFileDialogGetOpenFile(TextBox_TextPath, "Text File|*.txt", "Select Text File");
+        }
+
+        /// <summary>
+        /// 点击选择输入路径按钮
+        /// </summary>
+        /// <param name="sender">想用控件</param>
+        /// <param name="e">响应事件</param>
+        private void Button_SelectInputPath_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialogGetOpenFile(TextBox_InputPath, "CSV File|*.csv", "Select Input File");
         }
 
         /// <summary>
@@ -130,10 +193,45 @@ namespace SC2_TextSort
         /// </summary>
         /// <param name="sender">想用控件</param>
         /// <param name="e">响应事件</param>
-        private void Button_SelectOutputPath_Click_1(object sender, RoutedEventArgs e)
+        private void Button_SelectOutputPath_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialogGetSavePath(TextBox_OutputPath, "Text File|*.txt|CSV File|*.csv", "Select Output Path");
+        }
 
-            OpenFileDialogGetSavePath(TextBox_OutputPath, "Text File|*.txt|CSV File|*.csv", "Select Save Path");
+        /// <summary>
+        /// 点击确认生成按钮
+        /// </summary>
+        /// <param name="sender">想用控件</param>
+        /// <param name="e">响应事件</param>
+        private void Button_Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            char[] splitString = new char[2] { '\n', '\r' };
+            List<TextInStringTxt> textList = new List<TextInStringTxt>();
+            try
+            {
+                StreamReader textStringReader = new StreamReader(TextBox_TextPath.Text);
+                int i = 0;
+                textList.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => new TextInStringTxt(i++, r)));
+                textStringReader.Close();
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+            }
+
+            List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
+            try
+            {
+                StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
+                int i = 0;
+                galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
+                galaxyCodeReader.Close();
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+            }
+
         }
     }
 }
