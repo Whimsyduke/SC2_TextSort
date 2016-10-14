@@ -216,39 +216,43 @@ namespace SC2_TextSort
         private void Button_Confirm_Click(object sender, RoutedEventArgs e)
         {
             char[] splitString = new char[2] { '\n', '\r' };
+            List<TextInStringTxt> textListTemp = new List<TextInStringTxt>();
             List<TextInStringTxt> textList = new List<TextInStringTxt>();
-            try
+            //try
             {
                 StreamReader textStringReader = new StreamReader(TextBox_TextPath.Text);
                 int i = 0;
-                textList.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => new TextInStringTxt(i++, r)));
+                textListTemp.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "" && r.Contains("")).Select(r => new TextInStringTxt(i++, r)));
                 textStringReader.Close();
+                textList = textListTemp.Select(r => r.ReplaceSameTextToID(textListTemp)).ToList();
             }
-            catch (Exception error)
-            {
-                MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-            }
+            //catch (Exception error)
+            //{
+            //    MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+            //    return;
+            //}
 
             List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
             if (opMode == OperationMode.ToCSV)
             {
-                try
+                //try
                 {
                     StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
                     int i = 0;
                     galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
                     galaxyCodeReader.Close();
                 }
-                catch (Exception error)
-                {
-                    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-                }
+                //catch (Exception error)
+                //{
+                //    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                //    return;
+                //}
             }
             if (opMode == OperationMode.ToTXT)
             {
 
             }
-            try
+            //try
             {
                 switch (opMode)
                 {
@@ -269,10 +273,11 @@ namespace SC2_TextSort
                         break;
                 }
             }
-            catch (Exception error)
-            {
-                MessageBox.Show("Fail with output file " + TextBox_OutputPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-            }
+            //catch (Exception error)
+            //{
+            //    MessageBox.Show("Fail with output file " + TextBox_OutputPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+            //    return;
+            //}
         }
     }
 }

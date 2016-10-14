@@ -16,6 +16,7 @@ namespace SC2_TextSort
     {
         private int index;
         private string id;
+        private int galaxyCodeLineNumber;
         private int useCount;
         private int useCountTemp;
         private string zh_CN;
@@ -30,8 +31,25 @@ namespace SC2_TextSort
             id = textLine.Substring(0, idLength);
             zh_CN = textLine.Substring(idLength + 1);
             en_US = "";
+            galaxyCodeLineNumber = -1;
         }
 
+        /// <summary>
+        /// 替换相同内容为第一条的ID
+        /// </summary>
+        /// <param name="list">全部条目列表</param>
+        /// <returns></returns>
+        public TextInStringTxt ReplaceSameTextToID(List<TextInStringTxt> list)
+        {
+            List<TextInStringTxt> exists = list.Where(r => r.ZH_CN == zh_CN && r != this && r.Id.Contains("Param/Value/")).ToList();
+            if (exists.Count != 0)
+            {
+                exists.Sort();
+                zh_CN = exists.First().Id ;
+            }
+            return this;
+        }
+        
         /// <summary>
         /// 文本在原始文件中的序号
         /// </summary>
@@ -61,6 +79,22 @@ namespace SC2_TextSort
             set
             {
                 id = value;
+            }
+        }
+
+        /// <summary>
+        /// Galaxy脚本行号
+        /// </summary>
+        public int GalaxyCodeLineNumber
+        {
+            get
+            {
+                return galaxyCodeLineNumber;
+            }
+
+            set
+            {
+                galaxyCodeLineNumber = value;
             }
         }
 
@@ -159,9 +193,23 @@ namespace SC2_TextSort
             if (match.Count == 0) return null;
             TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
             newCodeLine.galaxyCodeLine = galaxyCode;
+            newCodeLine.lineNumber = number;
             foreach (var select in match)
             {
-                TextInStringTxt selectItem = textList.Where(r => r.Id == select.ToString()).First();
+                List<TextInStringTxt> selectItems = textList.Where(r => r.Id == select.ToString()).ToList();
+                TextInStringTxt selectItem;
+                if (selectItems.Count == 0)
+                {
+                    selectItem = new TextInStringTxt(-1, select.ToString() + "=");
+                }
+                else
+                {
+                    selectItem = selectItems.First();
+                }
+                if (selectItem.GalaxyCodeLineNumber == -1)
+                {
+                    selectItem.GalaxyCodeLineNumber = number;
+                }
                 selectItem.UseCount++;
                 newCodeLine.TextList.Add(selectItem);
             }
