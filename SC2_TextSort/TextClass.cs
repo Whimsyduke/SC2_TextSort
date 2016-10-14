@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using CsvHelper;
 
 namespace SC2_TextSort
 {
@@ -15,12 +16,16 @@ namespace SC2_TextSort
     {
         private int index;
         private string id;
+        private int useCount;
+        private int useCountTemp;
         private string zh_CN;
         private string en_US;
 
         public TextInStringTxt(int textIndex, string textLine)
         {
             index = textIndex;
+            useCount = 1;
+            useCountTemp = 1;
             int idLength = textLine.IndexOf('=');
             id = textLine.Substring(0, idLength);
             zh_CN = textLine.Substring(idLength + 1);
@@ -56,6 +61,38 @@ namespace SC2_TextSort
             set
             {
                 id = value;
+            }
+        }
+
+        /// <summary>
+        /// 使用计数
+        /// </summary>
+        public int UseCount
+        {
+            get
+            {
+                return useCount;
+            }
+
+            set
+            {
+                useCount = value;
+            }
+        }
+
+        /// <summary>
+        /// 使用计数临时
+        /// </summary>
+        public int UseCountTemp
+        {
+            get
+            {
+                return useCountTemp;
+            }
+
+            set
+            {
+                useCountTemp = value;
             }
         }
 
@@ -99,6 +136,7 @@ namespace SC2_TextSort
     {
         public static Regex REGULAREXPRESSIONS_STRINGEXTERNAL = new Regex("(?<=StringExternal\\(\")[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*(?=\"\\))");
         int lineNumber;
+        string galaxyCodeLine;
         List<TextInStringTxt> textList;
 
         /// <summary>
@@ -119,14 +157,62 @@ namespace SC2_TextSort
         {
             MatchCollection match = REGULAREXPRESSIONS_STRINGEXTERNAL.Matches(galaxyCode);
             if (match.Count == 0) return null;
-            TextInGalaxyCodeLine newText = new TextInGalaxyCodeLine();
+            TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
+            newCodeLine.galaxyCodeLine = galaxyCode;
             foreach (var select in match)
             {
-                newText.TextList.Add(textList.Where(r => r.Id == select.ToString()).First());
+                TextInStringTxt selectItem = textList.Where(r => r.Id == select.ToString()).First();
+                selectItem.UseCount++;
+                newCodeLine.TextList.Add(selectItem);
             }
-            return newText;
+            return newCodeLine;
         }
 
+        /// <summary>
+        /// 写入CSV文件
+        /// </summary>
+        /// <param name="csvWriter"></param>
+        public void CsvWrite(CsvWriter csvWriter)
+        {
+            csvWriter.WriteField(lineNumber);
+            csvWriter.WriteField(galaxyCodeLine);
+            csvWriter.NextRecord();
+            csvWriter.WriteField("ID:");
+            foreach (TextInStringTxt select in textList)
+            {
+                csvWriter.WriteField(select.Id);
+            }
+            csvWriter.NextRecord();
+            csvWriter.WriteField("USE COUNT:");
+            foreach (TextInStringTxt select in textList)
+            {
+                csvWriter.WriteField(select.UseCountTemp);
+                select.UseCountTemp++;
+            }
+            csvWriter.NextRecord();
+            csvWriter.WriteField("ZH_CN:");
+            foreach (TextInStringTxt select in textList)
+            {
+                csvWriter.WriteField(select.ZH_CN);
+            }
+            csvWriter.NextRecord();
+            csvWriter.WriteField("EN_US:");
+            foreach (TextInStringTxt select in textList)
+            {
+                csvWriter.WriteField(select.EN_US);
+            }
+            csvWriter.NextRecord();
+        }
+
+        public static TextInGalaxyCodeLine CsvRead(CsvReader csvReader, List<TextInStringTxt> textList)
+        {
+            TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
+            return newCodeLine;
+        }
+
+        /// <summary>
+        /// 在Galaxy文件中的行号
+        /// </summary>
         public int LineNumber
         {
             get
@@ -140,6 +226,25 @@ namespace SC2_TextSort
             }
         }
 
+        /// <summary>
+        /// 此行Galaxy脚步内容
+        /// </summary>
+        public string GalaxyCodeLine
+        {
+            get
+            {
+                return galaxyCodeLine;
+            }
+
+            set
+            {
+                galaxyCodeLine = value;
+            }
+        }
+
+        /// <summary>
+        /// Galaxy语句中的Text列表
+        /// </summary>
         public List<TextInStringTxt> TextList
         {
             get

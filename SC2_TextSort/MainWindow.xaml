@@ -6,12 +6,12 @@
         xmlns:local="clr-namespace:SC2_TextSort"
         xmlns:excel="http://propertytools.org/wpf"
         mc:Ignorable="d"
-        Title="SC2_TextSort" Height="194.5" Width="800">
+        Title="SC2_TextSort" Height="250" Width="800" MinHeight="250" MaxHeight="250">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <GroupBox Header="Operation Mode" Grid.Row="0" Margin="3">
             <Grid>
@@ -25,17 +25,6 @@
         </GroupBox>
         <GroupBox Header="PathSeting"  Grid.Row="1" Margin="3">
             <StackPanel Name="StackPanel_Main" Orientation="Vertical">
-                <Grid Name="Grid_GalaxyPath"  Visibility="Collapsed">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="70"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
-                    <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
-                </Grid>
                 <Grid Name="Grid_TextPath">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
@@ -47,7 +36,17 @@
                     <TextBox Name="TextBox_TextPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
                     <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectTextPath_Click"/>
                 </Grid>
-
+                <Grid Name="Grid_GalaxyPath">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
+                </Grid>
                 <Grid Name="Grid_InputPath">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
