@@ -174,34 +174,32 @@ namespace SC2_TextSort
         /// <param name="csvWriter"></param>
         public void CsvWrite(CsvWriter csvWriter)
         {
-            csvWriter.WriteField(lineNumber);
-            csvWriter.WriteField(galaxyCodeLine);
-            csvWriter.NextRecord();
-            csvWriter.WriteField("ID:");
+            int textIndex = 1;
             foreach (TextInStringTxt select in textList)
             {
+                if (textIndex == 1)
+                {
+                    csvWriter.WriteField("Galaxy Line Number:");
+                    csvWriter.WriteField(lineNumber);
+                    csvWriter.WriteField("Galaxy Line:");
+                    csvWriter.WriteField(galaxyCodeLine);
+                }
+                else
+                {
+                    csvWriter.WriteField("");
+                    csvWriter.WriteField("");
+                    csvWriter.WriteField("");
+                    csvWriter.WriteField("");
+                }
+                csvWriter.WriteField(textIndex);
+                textIndex++;
                 csvWriter.WriteField(select.Id);
-            }
-            csvWriter.NextRecord();
-            csvWriter.WriteField("USE COUNT:");
-            foreach (TextInStringTxt select in textList)
-            {
                 csvWriter.WriteField(select.UseCountTemp);
                 select.UseCountTemp++;
-            }
-            csvWriter.NextRecord();
-            csvWriter.WriteField("ZH_CN:");
-            foreach (TextInStringTxt select in textList)
-            {
                 csvWriter.WriteField(select.ZH_CN);
-            }
-            csvWriter.NextRecord();
-            csvWriter.WriteField("EN_US:");
-            foreach (TextInStringTxt select in textList)
-            {
                 csvWriter.WriteField(select.EN_US);
+                csvWriter.NextRecord();
             }
-            csvWriter.NextRecord();
         }
 
         public static TextInGalaxyCodeLine CsvRead(CsvReader csvReader, List<TextInStringTxt> textList)
