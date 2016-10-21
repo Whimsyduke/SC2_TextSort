@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.IO;
 using CsvHelper;
 
 namespace SC2_TextSort
@@ -21,7 +22,14 @@ namespace SC2_TextSort
         private string zh_CN;
         private string en_US;
         private int firstTextLineNumber = -1;
+        string originString;
+        bool haveEN_US;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="textIndex">文本行数</param>
+        /// <param name="textLine">文本内容</param>
         public TextInStringTxt(int textIndex, string textLine)
         {
             index = textIndex;
@@ -31,8 +39,15 @@ namespace SC2_TextSort
             id = textLine.Substring(0, idLength);
             zh_CN = textLine.Substring(idLength + 1);
             en_US = "";
+            originString = textLine;
+            haveEN_US = false;
         }
-                
+
+        public void WriteTxt(StreamWriter txtWriter)
+        {
+            txtWriter.WriteLine(id + "=" + en_US);
+        }
+                        
         /// <summary>
         /// 文本在原始文件中的序号
         /// </summary>
@@ -145,6 +160,38 @@ namespace SC2_TextSort
                 firstTextLineNumber = value;
             }
         }
+
+        /// <summary>
+        /// 原始文本内容
+        /// </summary>
+        public string OriginString
+        {
+            get
+            {
+                return originString;
+            }
+
+            set
+            {
+                originString = value;
+            }
+        }
+
+        /// <summary>
+        /// 已经写入EN_US
+        /// </summary>
+        public bool HaveEN_US
+        {
+            get
+            {
+                return haveEN_US;
+            }
+
+            set
+            {
+                haveEN_US = value;
+            }
+        }
     }
 
     /// <summary>
@@ -249,13 +296,7 @@ namespace SC2_TextSort
                 writeLine++;
             }
         }
-
-        public static TextInGalaxyCodeLine CsvRead(CsvReader csvReader, List<TextInStringTxt> textList)
-        {
-            TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
-            return newCodeLine;
-        }
-
+        
         /// <summary>
         /// 在Galaxy文件中的行号
         /// </summary>

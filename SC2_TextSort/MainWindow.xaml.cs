@@ -142,6 +142,7 @@ namespace SC2_TextSort
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Collapsed;
             Grid_OutputPath.Visibility = Visibility.Visible;
+            opMode = OperationMode.ToCSV;
         }
 
         /// <summary>
@@ -155,6 +156,7 @@ namespace SC2_TextSort
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Visible;
             Grid_OutputPath.Visibility = Visibility.Visible;
+            opMode = OperationMode.ToTXT;
         }
 
         /// <summary>
@@ -248,7 +250,35 @@ namespace SC2_TextSort
             }
             if (opMode == OperationMode.ToTXT)
             {
-
+                try
+                {
+                    StreamReader csvSR = new StreamReader(TextBox_InputPath.Text, new System.Text.UTF8Encoding(true));
+                    CsvReader csvReader = new CsvReader(csvSR);
+                    while (csvReader.Read())
+                    {
+                        string id = csvReader.GetField<string>("文本ID");
+                        string en_US = csvReader.GetField<string>("英文文本");
+                        string zh_CN = csvReader.GetField<string>("中文文本去除重复");
+                        bool isRepeat = csvReader.GetField<string>("中文文本重复内容") != "";
+                        TextInStringTxt text = textList.Where(r => r.Id == id).First();
+                        if (text.HaveEN_US) continue;
+                        if (isRepeat)
+                        {
+                            TextInStringTxt originText = textList.Where(r => r.Id == zh_CN).First();
+                            text.EN_US = originText.EN_US;
+                        }
+                        else
+                        {
+                            text.EN_US = en_US;
+                        }
+                    }
+                    csvSR.Close();
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show("Fail with CSV file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                    return;
+                }
             }
             try
             {
@@ -277,6 +307,13 @@ namespace SC2_TextSort
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
                         break;
                     case OperationMode.ToTXT:
+                        StreamWriter txtWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
+                        foreach (TextInStringTxt select in textList)
+                        {
+                            select.WriteTxt(txtWriter);
+                        }
+                        txtWriter.Close();
+                        MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
                         break;
                     default:
                         break;
