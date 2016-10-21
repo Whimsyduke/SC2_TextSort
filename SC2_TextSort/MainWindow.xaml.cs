@@ -256,10 +256,10 @@ namespace SC2_TextSort
                     CsvReader csvReader = new CsvReader(csvSR);
                     while (csvReader.Read())
                     {
-                        string id = csvReader.GetField<string>("文本ID");
-                        string en_US = csvReader.GetField<string>("英文文本");
-                        string zh_CN = csvReader.GetField<string>("中文文本去除重复");
-                        bool isRepeat = csvReader.GetField<string>("中文文本重复内容") != "";
+                        string id = csvReader.GetField<string>("TextId");
+                        string en_US = csvReader.GetField<string>("EN-US");
+                        string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
+                        bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
                         TextInStringTxt text = textList.Where(r => r.Id == id).First();
                         if (text.HaveEN_US) continue;
                         if (isRepeat)
@@ -287,15 +287,15 @@ namespace SC2_TextSort
                     case OperationMode.ToCSV:
                         StreamWriter csvSW = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         CsvWriter csvWriter = new CsvWriter(csvSW);
-                        csvWriter.WriteField("所在Galaxy行号");
-                        csvWriter.WriteField("所在Galaxy行脚本语句");
-                        csvWriter.WriteField("所在Galaxy行脚本中文本序号");
-                        csvWriter.WriteField("文本ID");
-                        csvWriter.WriteField("文本在Galaxy中出现次数");
-                        csvWriter.WriteField("第一次出现文本所在CSV行号");
-                        csvWriter.WriteField("中文文本重复内容");
-                        csvWriter.WriteField("中文文本去除重复");
-                        csvWriter.WriteField("英文文本");
+                        csvWriter.WriteField("GalaxyLine");
+                        csvWriter.WriteField("GalaxyCode");
+                        csvWriter.WriteField("GalaxyTextIndex");
+                        csvWriter.WriteField("TextId");
+                        csvWriter.WriteField("TextInGalaxyCount");
+                        csvWriter.WriteField("FirstLineNumberInCsv");
+                        csvWriter.WriteField("RepeatTextInZH-CN");
+                        csvWriter.WriteField("NoRepeatZH-CN");
+                        csvWriter.WriteField("EN-US");
                         csvWriter.NextRecord();
                         csvWriter.Configuration.Encoding = Encoding.UTF8;
                         int writeLine = 2;
