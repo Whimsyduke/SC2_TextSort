@@ -16,11 +16,11 @@ namespace SC2_TextSort
     {
         private int index;
         private string id;
-        private int galaxyCodeLineNumber;
         private int useCount;
         private int useCountTemp;
         private string zh_CN;
         private string en_US;
+        private int firstTextLineNumber = -1;
 
         public TextInStringTxt(int textIndex, string textLine)
         {
@@ -31,25 +31,8 @@ namespace SC2_TextSort
             id = textLine.Substring(0, idLength);
             zh_CN = textLine.Substring(idLength + 1);
             en_US = "";
-            galaxyCodeLineNumber = -1;
         }
-
-        /// <summary>
-        /// 替换相同内容为第一条的ID
-        /// </summary>
-        /// <param name="list">全部条目列表</param>
-        /// <returns></returns>
-        public TextInStringTxt ReplaceSameTextToID(List<TextInStringTxt> list)
-        {
-            List<TextInStringTxt> exists = list.Where(r => r.ZH_CN == zh_CN && r != this && r.Id.Contains("Param/Value/")).ToList();
-            if (exists.Count != 0)
-            {
-                exists.Sort();
-                zh_CN = exists.First().Id ;
-            }
-            return this;
-        }
-        
+                
         /// <summary>
         /// 文本在原始文件中的序号
         /// </summary>
@@ -81,22 +64,7 @@ namespace SC2_TextSort
                 id = value;
             }
         }
-
-        /// <summary>
-        /// Galaxy脚本行号
-        /// </summary>
-        public int GalaxyCodeLineNumber
-        {
-            get
-            {
-                return galaxyCodeLineNumber;
-            }
-
-            set
-            {
-                galaxyCodeLineNumber = value;
-            }
-        }
+        
 
         /// <summary>
         /// 使用计数
@@ -161,6 +129,22 @@ namespace SC2_TextSort
                 en_US = value;
             }
         }
+        
+        /// <summary>
+        /// 文本第一次出现的行号
+        /// </summary>
+        public int FirstTextLineNumber
+        {
+            get
+            {
+                return firstTextLineNumber;
+            }
+
+            set
+            {
+                firstTextLineNumber = value;
+            }
+        }
     }
 
     /// <summary>
@@ -206,10 +190,6 @@ namespace SC2_TextSort
                 {
                     selectItem = selectItems.First();
                 }
-                if (selectItem.GalaxyCodeLineNumber == -1)
-                {
-                    selectItem.GalaxyCodeLineNumber = number;
-                }
                 selectItem.UseCount++;
                 newCodeLine.TextList.Add(selectItem);
             }
@@ -220,33 +200,53 @@ namespace SC2_TextSort
         /// 写入CSV文件
         /// </summary>
         /// <param name="csvWriter"></param>
-        public void CsvWrite(CsvWriter csvWriter)
+        public void CsvWrite(CsvWriter csvWriter, List<TextInStringTxt> list, ref int writeLine)
         {
             int textIndex = 1;
             foreach (TextInStringTxt select in textList)
             {
                 if (textIndex == 1)
                 {
-                    csvWriter.WriteField("Galaxy Line Number:");
                     csvWriter.WriteField(lineNumber);
-                    csvWriter.WriteField("Galaxy Line:");
                     csvWriter.WriteField(galaxyCodeLine);
                 }
                 else
                 {
                     csvWriter.WriteField("");
                     csvWriter.WriteField("");
-                    csvWriter.WriteField("");
-                    csvWriter.WriteField("");
                 }
                 csvWriter.WriteField(textIndex);
                 textIndex++;
                 csvWriter.WriteField(select.Id);
-                csvWriter.WriteField(select.UseCountTemp);
+                List<TextInStringTxt> exists = list.Where(r => r.FirstTextLineNumber != -1 && r.ZH_CN == select.ZH_CN && r != select).ToList();
+                if (exists.Count == 0)
+                {
+                    csvWriter.WriteField(select.UseCountTemp);
+                    if (select.UseCountTemp == 1)
+                    {
+                        select.FirstTextLineNumber = writeLine;
+                        csvWriter.WriteField(writeLine);
+                        csvWriter.WriteField("");
+                        csvWriter.WriteField(select.ZH_CN);
+                    }
+                    else
+                    {
+                        csvWriter.WriteField(select.FirstTextLineNumber);
+                        csvWriter.WriteField(select.ZH_CN);
+                        csvWriter.WriteField(select.Id);
+                    }
+                }
+                else
+                {
+                    csvWriter.WriteField(select.UseCountTemp);
+                    csvWriter.WriteField(exists.First().FirstTextLineNumber);
+                    csvWriter.WriteField(select.ZH_CN);
+                    csvWriter.WriteField(exists.First().Id);
+                }
                 select.UseCountTemp++;
-                csvWriter.WriteField(select.ZH_CN);
                 csvWriter.WriteField(select.EN_US);
                 csvWriter.NextRecord();
+                writeLine++;
             }
         }
 

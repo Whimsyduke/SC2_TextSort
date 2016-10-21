@@ -216,53 +216,62 @@ namespace SC2_TextSort
         private void Button_Confirm_Click(object sender, RoutedEventArgs e)
         {
             char[] splitString = new char[2] { '\n', '\r' };
-            List<TextInStringTxt> textListTemp = new List<TextInStringTxt>();
             List<TextInStringTxt> textList = new List<TextInStringTxt>();
-            //try
+            try
             {
                 StreamReader textStringReader = new StreamReader(TextBox_TextPath.Text);
                 int i = 0;
-                textListTemp.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "" && r.Contains("")).Select(r => new TextInStringTxt(i++, r)));
+                textList.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "" && r.Contains("")).Select(r => new TextInStringTxt(i++, r)));
                 textStringReader.Close();
-                textList = textListTemp.Select(r => r.ReplaceSameTextToID(textListTemp)).ToList();
             }
-            //catch (Exception error)
-            //{
-            //    MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-            //    return;
-            //}
+            catch (Exception error)
+            {
+                MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                return;
+            }
 
             List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
             if (opMode == OperationMode.ToCSV)
             {
-                //try
+                try
                 {
                     StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
                     int i = 0;
                     galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
                     galaxyCodeReader.Close();
                 }
-                //catch (Exception error)
-                //{
-                //    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-                //    return;
-                //}
+                catch (Exception error)
+                {
+                    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                    return;
+                }
             }
             if (opMode == OperationMode.ToTXT)
             {
 
             }
-            //try
+            try
             {
                 switch (opMode)
                 {
                     case OperationMode.ToCSV:
                         StreamWriter csvSW = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         CsvWriter csvWriter = new CsvWriter(csvSW);
+                        csvWriter.WriteField("所在Galaxy行号");
+                        csvWriter.WriteField("所在Galaxy行脚本语句");
+                        csvWriter.WriteField("所在Galaxy行脚本中文本序号");
+                        csvWriter.WriteField("文本ID");
+                        csvWriter.WriteField("文本在Galaxy中出现次数");
+                        csvWriter.WriteField("第一次出现文本所在CSV行号");
+                        csvWriter.WriteField("中文文本重复内容");
+                        csvWriter.WriteField("中文文本去除重复");
+                        csvWriter.WriteField("英文文本");
+                        csvWriter.NextRecord();
                         csvWriter.Configuration.Encoding = Encoding.UTF8;
+                        int writeLine = 2;
                         foreach (TextInGalaxyCodeLine select in galaxyTextList)
                         {
-                            select.CsvWrite(csvWriter);
+                            select.CsvWrite(csvWriter, textList, ref writeLine);
                         }
                         csvSW.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
@@ -273,11 +282,11 @@ namespace SC2_TextSort
                         break;
                 }
             }
-            //catch (Exception error)
-            //{
-            //    MessageBox.Show("Fail with output file " + TextBox_OutputPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-            //    return;
-            //}
+            catch (Exception error)
+            {
+                MessageBox.Show("Fail with output file " + TextBox_OutputPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                return;
+            }
         }
     }
 }
