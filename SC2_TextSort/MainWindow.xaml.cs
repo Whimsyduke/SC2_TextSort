@@ -260,16 +260,40 @@ namespace SC2_TextSort
                         string en_US = csvReader.GetField<string>("EN-US");
                         string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
                         bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
-                        TextInStringTxt text = textList.Where(r => r.Id == id).First();
+                        var texts = textList.Where(r => r.Id == id);
+                        if (texts.Count() <= 0)
+                        {
+                            if (MessageBox.Show("在" + TextBox_TextPath.Text + "找不到ID为" + id + "的文本记录!，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                            {
+                                return;
+                            }
+                        }
+                        TextInStringTxt text = texts.First();
                         if (text.HaveEN_US) continue;
                         if (isRepeat)
                         {
+                            var originTextAll = textList.Where(r => r.Id == zh_CN);
+                            if (originTextAll.Count() == 0)
+                            {
+                                if (MessageBox.Show("在" + TextBox_TextPath.Text + "找不到ID为" + zh_CN + "的文本记录，作为ID为" + id + "的文本记录的同内容重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                {
+                                    return;
+                                }
+                            }
                             TextInStringTxt originText = textList.Where(r => r.Id == zh_CN).First();
+                            if (originText.HaveEN_US == false)
+                            {
+                                if (MessageBox.Show("在" + TextBox_InputPath.Text + "中不存在ID为" + zh_CN + "的文本记录，它是ID为" + id + "的文本记录的重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                {
+                                    return;
+                                }
+                            }
                             text.EN_US = originText.EN_US;
                         }
                         else
                         {
                             text.EN_US = en_US;
+                            text.HaveEN_US = true;
                         }
                     }
                     csvSR.Close();
