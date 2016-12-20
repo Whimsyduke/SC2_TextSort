@@ -142,6 +142,7 @@ namespace SC2_TextSort
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Collapsed;
             Grid_OutputPath.Visibility = Visibility.Visible;
+            CheckBox_KeepZH_CN.IsEnabled = false;
             opMode = OperationMode.ToCSV;
         }
 
@@ -156,6 +157,7 @@ namespace SC2_TextSort
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Visible;
             Grid_OutputPath.Visibility = Visibility.Visible;
+            CheckBox_KeepZH_CN.IsEnabled = true;
             opMode = OperationMode.ToTXT;
         }
 
@@ -334,7 +336,7 @@ namespace SC2_TextSort
                         StreamWriter txtWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         foreach (TextInStringTxt select in textList)
                         {
-                            select.WriteTxt(txtWriter);
+                            select.WriteTxt(txtWriter, CheckBox_KeepZH_CN.IsChecked == true);
                         }
                         txtWriter.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");

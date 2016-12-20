@@ -18,9 +18,11 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="0" GroupName="Mode" Content="Generation CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
-                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" GroupName="Mode" Content="Generation Txt" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
+                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" GroupName="Mode" Content="Generation TXT" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
+                <CheckBox Name="CheckBox_KeepZH_CN" Grid.Column="2" Content="Keep not translated text"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="PathSeting"  Grid.Row="1" Margin="3">

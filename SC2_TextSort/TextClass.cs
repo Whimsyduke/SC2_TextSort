@@ -43,9 +43,23 @@ namespace SC2_TextSort
             haveEN_US = false;
         }
 
-        public void WriteTxt(StreamWriter txtWriter)
+        public void WriteTxt(StreamWriter txtWriter, bool keepUntranslate)
         {
-            txtWriter.WriteLine(id + "=" + en_US);
+            if (keepUntranslate)
+            {
+                if (en_US != "")
+                {
+                    txtWriter.WriteLine(id + "=" + en_US);
+                }
+                else
+                {
+                    txtWriter.WriteLine(id + "=" + zh_CN);
+                }
+            }
+            else
+            {
+                txtWriter.WriteLine(id + "=" + en_US);
+            }
         }
                         
         /// <summary>
