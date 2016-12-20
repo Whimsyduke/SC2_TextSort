@@ -134,7 +134,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击生成CSV模式
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void RadioButton_ToCsvFile_Checked(object sender, RoutedEventArgs e)
         {
@@ -148,7 +148,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击生成TXT模式
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void RadioButton_ToTxtFile_Checked(object sender, RoutedEventArgs e)
         {
@@ -162,7 +162,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击选择txt文件的路径按钮
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void Button_SelectTextPath_Click(object sender, RoutedEventArgs e)
         {
@@ -172,7 +172,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击选择Galaxy文件的路径按钮
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void Button_SelectGalaxyPath_Click(object sender, RoutedEventArgs e)
         {
@@ -183,7 +183,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击选择输入路径按钮
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void Button_SelectInputPath_Click(object sender, RoutedEventArgs e)
         {
@@ -193,7 +193,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击选择输出路径按钮
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void Button_SelectOutputPath_Click(object sender, RoutedEventArgs e)
         {
@@ -213,7 +213,7 @@ namespace SC2_TextSort
         /// <summary>
         /// 点击确认生成按钮
         /// </summary>
-        /// <param name="sender">想用控件</param>
+        /// <param name="sender">响应控件</param>
         /// <param name="e">响应事件</param>
         private void Button_Confirm_Click(object sender, RoutedEventArgs e)
         {
