@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:SC2_TextSort"
         xmlns:excel="http://propertytools.org/wpf"
         mc:Ignorable="d"
-        Title="SC2_TextSort" Height="250" Width="800" MinHeight="250" MaxHeight="250">
+        Title="SC2_TextSort" Height="300" Width="800" MinHeight="300" MaxHeight="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="145"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <GroupBox Header="Operation Mode" Grid.Row="0" Margin="3">
@@ -21,10 +21,15 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="0" GroupName="Mode" Content="Generation CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
-                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" GroupName="Mode" Content="Generation TXT" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
-                <CheckBox Name="CheckBox_KeepZH_CN" Grid.Column="2" Content="Keep not translated text" Margin="3"/>
-                <CheckBox Name="CheckBox_RefreshZH_CN" Grid.Column="3" Content="Refresh CN text" Margin="3"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="0" Grid.Row="0" GroupName="Mode" Content="Generation CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
+                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" Grid.Row="0" GroupName="Mode" Content="Generation TXT" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
+                <RadioButton Name="RadioButton_ToRefreshFile" Grid.Column="2" Grid.Row="0" GroupName="Mode" Content="Refresh TXT" Margin="3" Click="RadioButton_ToRefreshFile_Click"/>
+                <CheckBox Name="CheckBox_KeepZH_CN" Grid.Column="0" Grid.Row="1" Content="Keep empty text" Margin="3"/>
+                <CheckBox Name="CheckBox_RefreshZH_CN" Grid.Column="1" Grid.Row="1" Content="Refresh CN text" Margin="3"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="PathSeting"  Grid.Row="1" Margin="3">
@@ -51,7 +56,7 @@
                     <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
                     <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
                 </Grid>
-                <Grid Name="Grid_InputPath">
+                <Grid Name="Grid_InputPath" Visibility="Collapsed">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="*"/>
@@ -62,7 +67,18 @@
                     <TextBox Name="TextBox_InputPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
                     <Button Name="Button_SelectInputPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectInputPath_Click"/>
                 </Grid>
-                <Grid Name="Grid_OutputPath" Visibility="Collapsed">
+                <Grid Name="Grid_PatchPath">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Patch Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBox Name="TextBox_PatchPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
+                    <Button Name="Button_PatchPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_PatchPath_Click"/>
+                </Grid>
+                <Grid Name="Grid_OutputPath">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="*"/>

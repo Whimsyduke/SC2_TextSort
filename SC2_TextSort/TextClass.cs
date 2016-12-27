@@ -21,6 +21,7 @@ namespace SC2_TextSort
         private int useCountTemp;
         private string zh_CN;
         private string en_US;
+        private string patch_CN;
         private int firstTextLineNumber = -1;
         string originString;
         bool haveEN_US;
@@ -39,36 +40,47 @@ namespace SC2_TextSort
             id = textLine.Substring(0, idLength);
             zh_CN = textLine.Substring(idLength + 1);
             en_US = "";
+            patch_CN = "";
             originString = textLine;
             haveEN_US = false;
         }
 
-        public void WriteTxt(StreamWriter txtWriter, bool refreshCN, bool keepUntranslate)
+        public TextInStringTxt(string id_text, string cn_text, string en_text)
         {
-            if (refreshCN)
+            index = 0;
+            useCount = 1;
+            useCountTemp = 1;
+            id = id_text;
+            zh_CN = cn_text;
+            en_US = en_text;
+            patch_CN = "";
+            originString = "";
+            haveEN_US = true;
+        }
+
+        public void WriteTxt(StreamWriter txtWriter, bool keepUntranslate)
+        {
+            if (keepUntranslate)
             {
-                txtWriter.WriteLine(id + "=" + zh_CN);
-            }
-            else
-            {
-                if (keepUntranslate)
-                {
-                    if (en_US != "")
-                    {
-                        txtWriter.WriteLine(id + "=" + en_US);
-                    }
-                    else
-                    {
-                        txtWriter.WriteLine(id + "=" + zh_CN);
-                    }
-                }
-                else
+                if (en_US != "")
                 {
                     txtWriter.WriteLine(id + "=" + en_US);
                 }
+                else
+                {
+                    txtWriter.WriteLine(id + "=" + zh_CN);
+                }
+            }
+            else
+            {
+                txtWriter.WriteLine(id + "=" + en_US);
             }
         }
-                        
+        public void WriteTxt(StreamWriter txtWriter)
+        {
+            txtWriter.WriteLine(id + "=" + zh_CN);
+        }
+
         /// <summary>
         /// 文本在原始文件中的序号
         /// </summary>
@@ -165,7 +177,23 @@ namespace SC2_TextSort
                 en_US = value;
             }
         }
-        
+
+        /// <summary>
+        /// 旧版本中文
+        /// </summary>
+        public string Patch_CN
+        {
+            get
+            {
+                return patch_CN;
+            }
+
+            set
+            {
+                patch_CN = value;
+            }
+        }
+
         /// <summary>
         /// 文本第一次出现的行号
         /// </summary>
@@ -295,12 +323,14 @@ namespace SC2_TextSort
                         select.FirstTextLineNumber = writeLine;
                         csvWriter.WriteField(writeLine);
                         csvWriter.WriteField("");
+                        csvWriter.WriteField(select.Patch_CN);
                         csvWriter.WriteField(select.ZH_CN);
                     }
                     else
                     {
                         csvWriter.WriteField(select.FirstTextLineNumber);
                         csvWriter.WriteField(select.ZH_CN);
+                        csvWriter.WriteField(select.Patch_CN);
                         csvWriter.WriteField(select.Id);
                     }
                 }
@@ -309,6 +339,7 @@ namespace SC2_TextSort
                     csvWriter.WriteField(select.UseCountTemp);
                     csvWriter.WriteField(exists.First().FirstTextLineNumber);
                     csvWriter.WriteField(select.ZH_CN);
+                    csvWriter.WriteField(select.Patch_CN);
                     csvWriter.WriteField(exists.First().Id);
                 }
                 select.UseCountTemp++;

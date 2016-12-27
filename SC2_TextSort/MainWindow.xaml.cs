@@ -26,6 +26,7 @@ namespace SC2_TextSort
         {
             ToCSV,
             ToTXT,
+            ToRefresh,
         }
 
         private OperationMode opMode = OperationMode.ToCSV;
@@ -141,9 +142,11 @@ namespace SC2_TextSort
             Grid_GalaxyPath.Visibility = Visibility.Visible;
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Collapsed;
+            Grid_PatchPath.Visibility = Visibility.Visible;
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = false;
             CheckBox_RefreshZH_CN.IsEnabled = false;
+            TextBox_OutputPath.Text = "";
             opMode = OperationMode.ToCSV;
         }
 
@@ -157,10 +160,30 @@ namespace SC2_TextSort
             Grid_GalaxyPath.Visibility = Visibility.Collapsed;
             Grid_TextPath.Visibility = Visibility.Visible;
             Grid_InputPath.Visibility = Visibility.Visible;
+            Grid_PatchPath.Visibility = Visibility.Collapsed;
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = true;
             CheckBox_RefreshZH_CN.IsEnabled = true;
+            TextBox_OutputPath.Text = "";
             opMode = OperationMode.ToTXT;
+        }
+
+        /// <summary>
+        /// 点击刷新中文模式
+        /// </summary>
+        /// <param name="sender">响应控件</param>
+        /// <param name="e">响应事件</param>
+        private void RadioButton_ToRefreshFile_Click(object sender, RoutedEventArgs e)
+        {
+            Grid_GalaxyPath.Visibility = Visibility.Collapsed;
+            Grid_TextPath.Visibility = Visibility.Visible;
+            Grid_InputPath.Visibility = Visibility.Visible;
+            Grid_PatchPath.Visibility = Visibility.Collapsed;
+            Grid_OutputPath.Visibility = Visibility.Visible;
+            CheckBox_KeepZH_CN.IsEnabled = false;
+            CheckBox_RefreshZH_CN.IsEnabled = false;
+            TextBox_OutputPath.Text = "";
+            opMode = OperationMode.ToRefresh;
         }
 
         /// <summary>
@@ -195,6 +218,16 @@ namespace SC2_TextSort
         }
 
         /// <summary>
+        /// 点击选择补丁路径按钮
+        /// </summary>
+        /// <param name="sender">响应控件</param>
+        /// <param name="e">响应事件</param>
+        private void Button_PatchPath_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialogGetOpenFile(TextBox_PatchPath, "CSV File|*.csv", "Select Patch File");
+        }
+
+        /// <summary>
         /// 点击选择输出路径按钮
         /// </summary>
         /// <param name="sender">响应控件</param>
@@ -207,6 +240,7 @@ namespace SC2_TextSort
                     OpenFileDialogGetSavePath(TextBox_OutputPath, "CSV File|*.csv", "Select Output Path");
                     break;
                 case OperationMode.ToTXT:
+                case OperationMode.ToRefresh:
                     OpenFileDialogGetSavePath(TextBox_OutputPath, "Text File|*.txt", "Select Output Path");
                     break;
                 default:
@@ -223,6 +257,7 @@ namespace SC2_TextSort
         {
             char[] splitString = new char[2] { '\n', '\r' };
             List<TextInStringTxt> textList = new List<TextInStringTxt>();
+            List<TextInStringTxt> patchList = new List<TextInStringTxt>();
             try
             {
                 StreamReader textStringReader = new StreamReader(TextBox_TextPath.Text);
@@ -235,21 +270,74 @@ namespace SC2_TextSort
                 MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
                 return;
             }
-
             List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
             if (opMode == OperationMode.ToCSV)
             {
-                try
+                //分析补丁CSV
+                if (File.Exists(TextBox_PatchPath.Text))
                 {
-                    StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
-                    int i = 0;
-                    galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
-                    galaxyCodeReader.Close();
-                }
-                catch (Exception error)
-                {
-                    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-                    return;
+                    try
+                    {
+                        StreamReader csvSR = new StreamReader(TextBox_PatchPath.Text, new System.Text.UTF8Encoding(true));
+                        CsvReader csvReader = new CsvReader(csvSR);
+                        while (csvReader.Read())
+                        {
+                            string id = csvReader.GetField<string>("TextId");
+                            string en_US = csvReader.GetField<string>("EN-US");
+                            string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
+                            bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
+                            TextInStringTxt text = new TextInStringTxt(id, zh_CN, en_US);
+                            if (isRepeat)
+                            {
+                                var originTextAll = patchList.Where(r => r.Id == zh_CN);
+                                if (originTextAll.Count() == 0)
+                                {
+                                    if (MessageBox.Show("在" + TextBox_PatchPath.Text + "找不到ID为" + zh_CN + "的文本记录，作为ID为" + id + "的文本记录的同内容重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                    {
+                                        return;
+                                    }
+                                }
+                                TextInStringTxt originText = originTextAll.First();
+                                text.ZH_CN = originText.ZH_CN;
+                                text.EN_US = originText.EN_US;
+                            }
+                            else
+                            {
+                                text.ZH_CN = zh_CN;
+                                text.EN_US = en_US;
+                            }
+                            patchList.Add(text);
+                            var patchTextAll = textList.Where(r => r.Id == text.Id);
+                            if (patchTextAll.Count() != 0)
+                            {
+                                TextInStringTxt patchText = patchTextAll.First();
+                                patchText.EN_US = text.EN_US;
+                                if (patchText.ZH_CN != text.ZH_CN)
+                                {
+                                    patchText.Patch_CN = text.ZH_CN;
+                                }
+                            }
+                        }
+                        csvSR.Close();
+                    }
+                    catch (Exception error)
+                    {
+                        MessageBox.Show("Fail with CSV file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                        return;
+                    }
+                    //分析Galaxy
+                    try
+                    {
+                        StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
+                        int i = 0;
+                        galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
+                        galaxyCodeReader.Close();
+                    }
+                    catch (Exception error)
+                    {
+                        MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                        return;
+                    }
                 }
             }
             if (opMode == OperationMode.ToTXT)
@@ -274,10 +362,68 @@ namespace SC2_TextSort
                         }
                         TextInStringTxt text = texts.First();
                         if (text.HaveEN_US) continue;
-                        if (CheckBox_RefreshZH_CN.IsChecked == true)
+                        if (isRepeat)
                         {
-                            text.ZH_CN = zh_CN;
+                            var originTextAll = textList.Where(r => r.Id == zh_CN);
+                            if (originTextAll.Count() == 0)
+                            {
+                                if (MessageBox.Show("在" + TextBox_TextPath.Text + "找不到ID为" + zh_CN + "的文本记录，作为ID为" + id + "的文本记录的同内容重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                {
+                                    return;
+                                }
+                            }
+                            TextInStringTxt originText = originTextAll.First();
+                            if (originText.HaveEN_US == false)
+                            {
+                                if (MessageBox.Show("在" + TextBox_InputPath.Text + "中不存在ID为" + zh_CN + "的文本记录，它是ID为" + id + "的文本记录的重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                {
+                                    return;
+                                }
+                            }
+                            if (CheckBox_RefreshZH_CN.IsChecked == true)
+                            {
+                                text.ZH_CN = originText.ZH_CN;
+                            }
+                            text.EN_US = originText.EN_US;
                         }
+                        else
+                        {
+                            if (CheckBox_RefreshZH_CN.IsChecked == true)
+                            {
+                                text.ZH_CN = zh_CN;
+                            }
+                            text.EN_US = en_US;
+                            text.HaveEN_US = true;
+                        }
+                    }
+                    csvSR.Close();
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show("Fail with CSV file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                    return;
+                }
+            }
+            if (opMode == OperationMode.ToRefresh)
+            {
+                try
+                {
+                    StreamReader csvSR = new StreamReader(TextBox_InputPath.Text, new System.Text.UTF8Encoding(true));
+                    CsvReader csvReader = new CsvReader(csvSR);
+                    while (csvReader.Read())
+                    {
+                        string id = csvReader.GetField<string>("TextId");
+                        string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
+                        bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
+                        var texts = textList.Where(r => r.Id == id);
+                        if (texts.Count() <= 0)
+                        {
+                            if (MessageBox.Show("在" + TextBox_TextPath.Text + "找不到ID为" + id + "的文本记录!，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                            {
+                                return;
+                            }
+                        }
+                        TextInStringTxt text = texts.First();
                         if (isRepeat)
                         {
                             var originTextAll = textList.Where(r => r.Id == zh_CN);
@@ -289,19 +435,11 @@ namespace SC2_TextSort
                                 }
                             }
                             TextInStringTxt originText = textList.Where(r => r.Id == zh_CN).First();
-                            if (originText.HaveEN_US == false)
-                            {
-                                if (MessageBox.Show("在" + TextBox_InputPath.Text + "中不存在ID为" + zh_CN + "的文本记录，它是ID为" + id + "的文本记录的重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                                {
-                                    return;
-                                }
-                            }
-                            text.EN_US = originText.EN_US;
+                            text.ZH_CN = originText.ZH_CN;
                         }
                         else
                         {
-                            text.EN_US = en_US;
-                            text.HaveEN_US = true;
+                            text.ZH_CN = zh_CN;
                         }
                     }
                     csvSR.Close();
@@ -326,6 +464,7 @@ namespace SC2_TextSort
                         csvWriter.WriteField("TextInGalaxyCount");
                         csvWriter.WriteField("FirstLineNumberInCsv");
                         csvWriter.WriteField("RepeatTextInZH-CN");
+                        csvWriter.WriteField("PatchTextInZH-CN");
                         csvWriter.WriteField("NoRepeatZH-CN");
                         csvWriter.WriteField("EN-US");
                         csvWriter.NextRecord();
@@ -342,9 +481,18 @@ namespace SC2_TextSort
                         StreamWriter txtWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         foreach (TextInStringTxt select in textList)
                         {
-                            select.WriteTxt(txtWriter, CheckBox_RefreshZH_CN.IsChecked == true, CheckBox_KeepZH_CN.IsChecked == true);
+                            select.WriteTxt(txtWriter, CheckBox_KeepZH_CN.IsChecked == true);
                         }
                         txtWriter.Close();
+                        MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
+                        break;
+                    case OperationMode.ToRefresh:
+                        StreamWriter refreshWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
+                        foreach (TextInStringTxt select in textList)
+                        {
+                            select.WriteTxt(refreshWriter);
+                        }
+                        refreshWriter.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
                         break;
                     default:
