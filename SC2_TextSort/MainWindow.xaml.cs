@@ -143,6 +143,7 @@ namespace SC2_TextSort
             Grid_InputPath.Visibility = Visibility.Collapsed;
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = false;
+            CheckBox_RefreshZH_CN.IsEnabled = false;
             opMode = OperationMode.ToCSV;
         }
 
@@ -158,6 +159,7 @@ namespace SC2_TextSort
             Grid_InputPath.Visibility = Visibility.Visible;
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = true;
+            CheckBox_RefreshZH_CN.IsEnabled = true;
             opMode = OperationMode.ToTXT;
         }
 
@@ -272,6 +274,10 @@ namespace SC2_TextSort
                         }
                         TextInStringTxt text = texts.First();
                         if (text.HaveEN_US) continue;
+                        if (CheckBox_RefreshZH_CN.IsChecked == true)
+                        {
+                            text.ZH_CN = zh_CN;
+                        }
                         if (isRepeat)
                         {
                             var originTextAll = textList.Where(r => r.Id == zh_CN);
@@ -336,7 +342,7 @@ namespace SC2_TextSort
                         StreamWriter txtWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         foreach (TextInStringTxt select in textList)
                         {
-                            select.WriteTxt(txtWriter, CheckBox_KeepZH_CN.IsChecked == true);
+                            select.WriteTxt(txtWriter, CheckBox_RefreshZH_CN.IsChecked == true, CheckBox_KeepZH_CN.IsChecked == true);
                         }
                         txtWriter.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
