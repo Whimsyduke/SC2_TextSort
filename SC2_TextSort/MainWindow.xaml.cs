@@ -336,19 +336,19 @@ namespace SC2_TextSort
                         MessageBox.Show("Fail with CSV file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
                         return;
                     }
-                    //分析Galaxy
-                    try
-                    {
-                        StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
-                        int i = 0;
-                        galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
-                        galaxyCodeReader.Close();
-                    }
-                    catch (Exception error)
-                    {
-                        MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-                        return;
-                    }
+                }
+                //分析Galaxy
+                try
+                {
+                    StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
+                    int i = 0;
+                    galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
+                    galaxyCodeReader.Close();
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                    return;
                 }
             }
             if (opMode == OperationMode.ToTXT)
