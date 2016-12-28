@@ -146,6 +146,7 @@ namespace SC2_TextSort
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = false;
             CheckBox_RefreshZH_CN.IsEnabled = false;
+            CheckBox_KeepZHId_CN.IsEnabled = false;
             TextBox_OutputPath.Text = "";
             opMode = OperationMode.ToCSV;
         }
@@ -163,7 +164,16 @@ namespace SC2_TextSort
             Grid_PatchPath.Visibility = Visibility.Collapsed;
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = true;
-            CheckBox_RefreshZH_CN.IsEnabled = true;
+            if (CheckBox_KeepZH_CN.IsChecked == true)
+            {
+                CheckBox_RefreshZH_CN.IsEnabled = true;
+                CheckBox_KeepZHId_CN.IsEnabled = true;
+            }
+            else
+            {
+                CheckBox_RefreshZH_CN.IsEnabled = false;
+                CheckBox_KeepZHId_CN.IsEnabled = false;
+            }
             TextBox_OutputPath.Text = "";
             opMode = OperationMode.ToTXT;
         }
@@ -182,6 +192,7 @@ namespace SC2_TextSort
             Grid_OutputPath.Visibility = Visibility.Visible;
             CheckBox_KeepZH_CN.IsEnabled = false;
             CheckBox_RefreshZH_CN.IsEnabled = false;
+            CheckBox_KeepZHId_CN.IsEnabled = false;
             TextBox_OutputPath.Text = "";
             opMode = OperationMode.ToRefresh;
         }
@@ -380,7 +391,7 @@ namespace SC2_TextSort
                                     return;
                                 }
                             }
-                            if (CheckBox_RefreshZH_CN.IsChecked == true)
+                            if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
                             {
                                 text.ZH_CN = originText.ZH_CN;
                             }
@@ -388,7 +399,7 @@ namespace SC2_TextSort
                         }
                         else
                         {
-                            if (CheckBox_RefreshZH_CN.IsChecked == true)
+                            if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
                             {
                                 text.ZH_CN = zh_CN;
                             }
@@ -481,7 +492,7 @@ namespace SC2_TextSort
                         StreamWriter txtWriter = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         foreach (TextInStringTxt select in textList)
                         {
-                            select.WriteTxt(txtWriter, CheckBox_KeepZH_CN.IsChecked == true);
+                            select.WriteTxt(txtWriter, CheckBox_KeepZH_CN.IsChecked == true, CheckBox_KeepZHId_CN.IsChecked == true);
                         }
                         txtWriter.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
@@ -504,6 +515,28 @@ namespace SC2_TextSort
                 MessageBox.Show("Fail with output file " + TextBox_OutputPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
                 return;
             }
+        }
+
+        /// <summary>
+        /// 保留中文选择True
+        /// </summary>
+        /// <param name="sender">响应控件</param>
+        /// <param name="e">响应事件</param>
+        private void CheckBox_KeepZH_CN_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox_RefreshZH_CN.IsEnabled = true;
+            CheckBox_KeepZHId_CN.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// 保留中文选择False
+        /// </summary>
+        /// <param name="sender">响应控件</param>
+        /// <param name="e">响应事件</param>
+        private void CheckBox_KeepZH_CN_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox_RefreshZH_CN.IsEnabled = false;
+            CheckBox_KeepZHId_CN.IsEnabled = false;
         }
     }
 }

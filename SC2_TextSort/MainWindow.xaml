@@ -13,10 +13,10 @@
             <RowDefinition Height="145"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="Operation Mode" Grid.Row="0" Margin="3">
+        <GroupBox Header="模式选择" Grid.Row="0" Margin="3">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="AUTO"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -25,72 +25,75 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="0" Grid.Row="0" GroupName="Mode" Content="Generation CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
-                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="1" Grid.Row="0" GroupName="Mode" Content="Generation TXT" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
-                <RadioButton Name="RadioButton_ToRefreshFile" Grid.Column="2" Grid.Row="0" GroupName="Mode" Content="Refresh TXT" Margin="3" Click="RadioButton_ToRefreshFile_Click"/>
-                <CheckBox Name="CheckBox_KeepZH_CN" Grid.Column="0" Grid.Row="1" Content="Keep empty text" Margin="3"/>
-                <CheckBox Name="CheckBox_RefreshZH_CN" Grid.Column="1" Grid.Row="1" Content="Refresh CN text" Margin="3"/>
+                <TextBlock Text="模式:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="3,3,20,3"/>
+                <RadioButton Name="RadioButton_ToCsvFile" Grid.Column="1" Grid.Row="0" GroupName="Mode" Content="生成待翻译CSV" Margin="3" Checked="RadioButton_ToCsvFile_Checked"/>
+                <RadioButton Name="RadioButton_ToTxtFile" Grid.Column="2" Grid.Row="0" GroupName="Mode" Content="还原TXT" Margin="3" Checked="RadioButton_ToTxtFile_Checked"/>
+                <RadioButton Name="RadioButton_ToRefreshFile" Grid.Column="3" Grid.Row="0" GroupName="Mode" Content="刷新中文TXT" Margin="3" Click="RadioButton_ToRefreshFile_Click"/>
+                <TextBlock Text="配置:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Margin="3,3,20,3"/>
+                <CheckBox Name="CheckBox_KeepZH_CN" Grid.Column="1" Grid.Row="1" Content="未翻译保留中文" Margin="3" Checked="CheckBox_KeepZH_CN_Checked" Unchecked="CheckBox_KeepZH_CN_Unchecked"/>
+                <CheckBox Name="CheckBox_RefreshZH_CN" Grid.Column="2" Grid.Row="1" Content="刷新保留中文" Margin="3"/>
+                <CheckBox Name="CheckBox_KeepZHId_CN" Grid.Column="3" Grid.Row="1" Content="保留中文添加ID" Margin="3"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="PathSeting"  Grid.Row="1" Margin="3">
+        <GroupBox Header="路径设置"  Grid.Row="1" Margin="3">
             <StackPanel Name="StackPanel_Main" Orientation="Vertical">
                 <Grid Name="Grid_TextPath">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Text Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="GameString.txt路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_TextPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectTextPath_Click"/>
+                    <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_SelectTextPath_Click"/>
                 </Grid>
                 <Grid Name="Grid_GalaxyPath">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Galaxy Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="对应Galaxy文件路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_GalaxyPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectGalaxyPath_Click"/>
+                    <Button Name="Button_SelectGalaxyPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_SelectGalaxyPath_Click"/>
                 </Grid>
                 <Grid Name="Grid_InputPath" Visibility="Collapsed">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Input Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="已翻译CSV文件路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_InputPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_SelectInputPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectInputPath_Click"/>
+                    <Button Name="Button_SelectInputPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_SelectInputPath_Click"/>
                 </Grid>
                 <Grid Name="Grid_PatchPath">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Patch Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="补丁CSV文件路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_PatchPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_PatchPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_PatchPath_Click"/>
+                    <Button Name="Button_PatchPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_PatchPath_Click"/>
                 </Grid>
                 <Grid Name="Grid_OutputPath">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Output Path:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="生成CSV或TXT路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_OutputPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
-                    <Button Name="Button_SelectOutputPath" Grid.Column="2" Margin="3" Padding="3" Content="Path" Click="Button_SelectOutputPath_Click"/>
+                    <Button Name="Button_SelectOutputPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_SelectOutputPath_Click"/>
                 </Grid>
             </StackPanel>
         </GroupBox>
-        <Button Name="Button_Confirm" Grid.Row="2" Grid.RowSpan="3" Margin="3" Padding="3" Content="Confirm" Click="Button_Confirm_Click"/>
+        <Button Name="Button_Confirm" Grid.Row="2" Grid.RowSpan="3" Margin="3" Padding="3" Content="生成" Click="Button_Confirm_Click"/>
     </Grid>
 </Window>

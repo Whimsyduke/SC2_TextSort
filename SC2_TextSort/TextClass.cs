@@ -58,7 +58,7 @@ namespace SC2_TextSort
             haveEN_US = true;
         }
 
-        public void WriteTxt(StreamWriter txtWriter, bool keepUntranslate)
+        public void WriteTxt(StreamWriter txtWriter, bool keepUntranslate, bool showKeepId)
         {
             if (keepUntranslate)
             {
@@ -68,7 +68,14 @@ namespace SC2_TextSort
                 }
                 else
                 {
-                    txtWriter.WriteLine(id + "=" + zh_CN);
+                    if (showKeepId)
+                    {
+                        txtWriter.WriteLine(id + "=" + "[" + id.Substring(id.LastIndexOf('/') + 1) + "]" + zh_CN);
+                    }
+                    else
+                    {
+                        txtWriter.WriteLine(id + "=" + zh_CN);
+                    }
                 }
             }
             else
