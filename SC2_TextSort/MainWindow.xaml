@@ -44,7 +44,7 @@
                         <ColumnDefinition Width="70"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="GameString.txt路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="GameStrings.txt路径:" Grid.Column="0" Margin="3" VerticalAlignment="Center"/>
                     <TextBox Name="TextBox_TextPath" Grid.Column="1" VerticalContentAlignment="Center" Margin="3"/>
                     <Button Name="Button_SelectTextPath" Grid.Column="2" Margin="3" Padding="3" Content="选择" Click="Button_SelectTextPath_Click"/>
                 </Grid>

@@ -30,22 +30,22 @@ namespace SC2_TextSort
         }
 
         private OperationMode opMode = OperationMode.ToCSV;
-        private List<TextInGalaxyCodeLine> galaxyCodeText;
-        /// <summary>
-        /// Galaxy脚本及包含Text列表
-        /// </summary>
-        public List<TextInGalaxyCodeLine> GalaxyCodeText
-        {
-            get
-            {
-                return galaxyCodeText;
-            }
+        //private List<TextInGalaxyCodeLine> galaxyCodeText;
+        ///// <summary>
+        ///// Galaxy脚本及包含Text列表
+        ///// </summary>
+        //public List<TextInGalaxyCodeLine> GalaxyCodeText
+        //{
+        //    get
+        //    {
+        //        return galaxyCodeText;
+        //    }
 
-            set
-            {
-                galaxyCodeText = value;
-            }
-        }
+        //    set
+        //    {
+        //        galaxyCodeText = value;
+        //    }
+        //}
 
         /// <summary>
         /// 构造函数
@@ -273,17 +273,33 @@ namespace SC2_TextSort
             {
                 StreamReader textStringReader = new StreamReader(TextBox_TextPath.Text);
                 int i = 0;
-                textList.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "" && r.Contains("")).Select(r => new TextInStringTxt(i++, r)));
+                textList.AddRange(textStringReader.ReadToEnd().Split(splitString).Where(r => r != "" && r != String.Empty).Select(r => new TextInStringTxt(i++, r)));
                 textStringReader.Close();
             }
             catch (Exception error)
             {
-                MessageBox.Show("Fail with *String.txt file " + TextBox_TextPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                MessageBox.Show("读取GameStrings.txt文件：" + TextBox_TextPath.Text + "失败。\r\n错误文本为：" + error.Message, "GameStrings.txt读取错误！", MessageBoxButton.OK);
                 return;
             }
-            List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
+            //List<TextInGalaxyCodeLine> galaxyTextList = new List<TextInGalaxyCodeLine>();
+
             if (opMode == OperationMode.ToCSV)
             {
+                try
+                {
+                    StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
+                    string Galaxy = galaxyCodeReader.ReadToEnd();
+                    galaxyCodeReader.Close();
+                    foreach (TextInStringTxt select in textList)
+                    {
+                        select.InGalaxy = Galaxy.Contains(select.Id);
+                    }
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show("读取Galaxy文件：" + TextBox_GalaxyPath.Text + "失败。\r\n错误文本为：" + error.Message, "Galaxy文件读取错误！", MessageBoxButton.OK);
+                    return;
+                }
                 //分析补丁CSV
                 if (File.Exists(TextBox_PatchPath.Text))
                 {
@@ -333,23 +349,23 @@ namespace SC2_TextSort
                     }
                     catch (Exception error)
                     {
-                        MessageBox.Show("Fail with CSV file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                        MessageBox.Show("读取CSV文件：" + TextBox_GalaxyPath.Text + "失败。\r\n错误文本为：" + error.Message, "读取CSV文件错误！", MessageBoxButton.OK);
                         return;
                     }
                 }
-                //分析Galaxy
-                try
-                {
-                    StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
-                    int i = 0;
-                    galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
-                    galaxyCodeReader.Close();
-                }
-                catch (Exception error)
-                {
-                    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
-                    return;
-                }
+                ////分析Galaxy
+                //try
+                //{
+                //    StreamReader galaxyCodeReader = new StreamReader(TextBox_GalaxyPath.Text);
+                //    int i = 0;
+                //    galaxyTextList.AddRange(galaxyCodeReader.ReadToEnd().Split(splitString).Where(r => r != "").Select(r => TextInGalaxyCodeLine.GetTextListByGalaxyLine(i++, r, textList)).Where(r => r != null));
+                //    galaxyCodeReader.Close();
+                //}
+                //catch (Exception error)
+                //{
+                //    MessageBox.Show("Fail with Galaxy file " + TextBox_GalaxyPath.Text + ".\r\nError message is:" + error.Message, "Text File Error!", MessageBoxButton.OK);
+                //    return;
+                //}
             }
             if (opMode == OperationMode.ToTXT)
             {
@@ -468,23 +484,25 @@ namespace SC2_TextSort
                     case OperationMode.ToCSV:
                         StreamWriter csvSW = new StreamWriter(TextBox_OutputPath.Text, false, new System.Text.UTF8Encoding(true));
                         CsvWriter csvWriter = new CsvWriter(csvSW);
-                        csvWriter.WriteField("GalaxyLine");
-                        csvWriter.WriteField("GalaxyCode");
-                        csvWriter.WriteField("GalaxyTextIndex");
+                        //csvWriter.WriteField("GalaxyLine");
+                        //csvWriter.WriteField("GalaxyCode");
+                        //csvWriter.WriteField("GalaxyTextIndex");
                         csvWriter.WriteField("TextId");
-                        csvWriter.WriteField("TextInGalaxyCount");
+                        csvWriter.WriteField("TextType");
+                        csvWriter.WriteField("InGalaxy");
+                        csvWriter.WriteField("UpdataCN");
                         csvWriter.WriteField("FirstLineNumberInCsv");
                         csvWriter.WriteField("RepeatTextInZH-CN");
                         csvWriter.WriteField("PatchTextInZH-CN");
                         csvWriter.WriteField("NoRepeatZH-CN");
                         csvWriter.WriteField("EN-US");
-                        csvWriter.NextRecord();
-                        csvWriter.Configuration.Encoding = Encoding.UTF8;
-                        int writeLine = 2;
-                        foreach (TextInGalaxyCodeLine select in galaxyTextList)
-                        {
-                            select.CsvWrite(csvWriter, textList, ref writeLine);
-                        }
+                        //csvWriter.NextRecord();
+                        //csvWriter.Configuration.Encoding = Encoding.UTF8;
+                        //int writeLine = 2;
+                        //foreach (TextInGalaxyCodeLine select in galaxyTextList)
+                        //{
+                        //    select.CsvWrite(csvWriter, textList, ref writeLine);
+                        //}
                         csvSW.Close();
                         MessageBox.Show(TextBox_OutputPath.Text + " generation success.");
                         break;
