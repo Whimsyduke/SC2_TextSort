@@ -27,6 +27,7 @@ namespace SC2_TextSort
         bool inGalaxy;
         string originString;
         bool haveEN_US;
+        bool updataCN;
 
         /// <summary>
         /// 构造函数
@@ -47,6 +48,7 @@ namespace SC2_TextSort
             originString = textLine;
             haveEN_US = false;
             inGalaxy = false;
+            updataCN = false;
         }
 
         /// <summary>
@@ -67,7 +69,7 @@ namespace SC2_TextSort
             patch_CN = "";
             originString = "";
             haveEN_US = true;
-            haveEN_US = false;
+            updataCN = false;
         }
 
         /// <summary>
@@ -111,6 +113,74 @@ namespace SC2_TextSort
         {
             txtWriter.WriteLine(id + "=" + zh_CN);
         }
+
+        /// <summary>
+        /// 写入CSV文件
+        /// </summary>
+        /// <param name="csvWriter"></param>
+        public void CsvWrite(CsvWriter csvWriter, List<TextInStringTxt> list, ref int writeLine)
+        {
+            //位于Galaxy的文本已经单独写入
+            if (inGalaxy) return;
+
+            //TextId
+            csvWriter.WriteField(id);
+            //TextType
+            csvWriter.WriteField(type);
+            //InGalaxy
+            csvWriter.WriteField("NotInGalaxy");
+            //GalaxyLine
+            csvWriter.WriteField(-1);
+            //GalaxyTextIndex
+            csvWriter.WriteField(-1);
+            //UpdataCN
+            if (updataCN)
+            {
+                csvWriter.WriteField("UpdataCN");
+            }
+            else
+            {
+                csvWriter.WriteField("NotUpdataCN");
+            }
+            //FirstLineNumberInCsv, TextRepeatCount, RepeatTextInZH-CN, PatchTextInZH-CN, NoRepeatZH-CN
+            List<TextInStringTxt> exists = list.Where(r => r.FirstTextLineNumber != -1 && r.ZH_CN == zh_CN && r != this).ToList();
+            if (exists.Count == 0)
+            {
+                if (useCountTemp == 1)
+                {
+                    firstTextLineNumber = writeLine;
+                    csvWriter.WriteField(writeLine);
+                    csvWriter.WriteField(useCountTemp);
+                    csvWriter.WriteField("");
+                    csvWriter.WriteField(patch_CN);
+                    csvWriter.WriteField(zh_CN);
+                }
+                else
+                {
+                    csvWriter.WriteField(firstTextLineNumber);
+                    csvWriter.WriteField(useCountTemp);
+                    csvWriter.WriteField(zh_CN);
+                    csvWriter.WriteField(patch_CN);
+                    csvWriter.WriteField(id);
+                }
+            }
+            else
+            {
+                csvWriter.WriteField(useCountTemp);
+                csvWriter.WriteField(exists.First().FirstTextLineNumber);
+                csvWriter.WriteField(zh_CN);
+                csvWriter.WriteField(patch_CN);
+                csvWriter.WriteField(exists.First().Id);
+            }
+            useCountTemp++;
+            //EN-US
+            csvWriter.WriteField(en_US);
+            csvWriter.NextRecord();
+            writeLine++;
+        }
+
+
+        #region 属性
 
         /// <summary>
         /// 文本在原始文件中的序号
@@ -303,160 +373,194 @@ namespace SC2_TextSort
                 inGalaxy = value;
             }
         }
+
+        /// <summary>
+        /// 使用补丁时中文被刷新
+        /// </summary>
+        public bool UpdataCN
+        {
+            get
+            {
+                return updataCN;
+            }
+
+            set
+            {
+                updataCN = value;
+            }
+        }
+        #endregion
     }
 
-    ///// <summary>
-    ///// 每行Galaxy代码中包含的Text
-    ///// </summary>
-    //public class TextInGalaxyCodeLine
-    //{
-    //    public static Regex REGULAREXPRESSIONS_STRINGEXTERNAL = new Regex("(?<=StringExternal\\(\")[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*(?=\"\\))");
-    //    int lineNumber;
-    //    string galaxyCodeLine;
-    //    List<TextInStringTxt> textList;
+    /// <summary>
+    /// 每行Galaxy代码中包含的Text
+    /// </summary>
+    public class TextInGalaxyCodeLine
+    {
+        public static Regex REGULAREXPRESSIONS_STRINGEXTERNAL = new Regex("(?<=StringExternal\\(\")[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*(?=\"\\))");
+        int lineNumber;
+        string galaxyCodeLine;
+        List<TextInStringTxt> textList;
 
-    //    /// <summary>
-    //    /// 构造函数
-    //    /// </summary>
-    //    private TextInGalaxyCodeLine()
-    //    {
-    //        textList = new List<TextInStringTxt>();
-    //    }
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        private TextInGalaxyCodeLine()
+        {
+            textList = new List<TextInStringTxt>();
+        }
 
-    //    /// <summary>
-    //    /// 获取每行Galaxy脚本的文本
-    //    /// </summary>
-    //    /// <param name="index">galaxy脚本行号</param>
-    //    /// <param name="galaxyCode"></param>
-    //    /// <returns>一行galaxy脚本包含的Text</returns>
-    //    public static TextInGalaxyCodeLine GetTextListByGalaxyLine(int number, string galaxyCode, List<TextInStringTxt> textList)
-    //    {
-    //        MatchCollection match = REGULAREXPRESSIONS_STRINGEXTERNAL.Matches(galaxyCode);
-    //        if (match.Count == 0) return null;
-    //        TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
-    //        newCodeLine.galaxyCodeLine = galaxyCode;
-    //        newCodeLine.lineNumber = number;
-    //        foreach (var select in match)
-    //        {
-    //            List<TextInStringTxt> selectItems = textList.Where(r => r.Id == select.ToString()).ToList();
-    //            TextInStringTxt selectItem;
-    //            if (selectItems.Count == 0)
-    //            {
-    //                selectItem = new TextInStringTxt(-1, select.ToString() + "=");
-    //            }
-    //            else
-    //            {
-    //                selectItem = selectItems.First();
-    //            }
-    //            selectItem.UseCount++;
-    //            newCodeLine.TextList.Add(selectItem);
-    //        }
-    //        return newCodeLine;
-    //    }
+        /// <summary>
+        /// 获取每行Galaxy脚本的文本
+        /// </summary>
+        /// <param name="index">galaxy脚本行号</param>
+        /// <param name="galaxyCode"></param>
+        /// <returns>一行galaxy脚本包含的Text</returns>
+        public static TextInGalaxyCodeLine GetTextListByGalaxyLine(int number, string galaxyCode, List<TextInStringTxt> textList)
+        {
+            MatchCollection match = REGULAREXPRESSIONS_STRINGEXTERNAL.Matches(galaxyCode);
+            if (match.Count == 0) return null;
+            TextInGalaxyCodeLine newCodeLine = new TextInGalaxyCodeLine();
+            newCodeLine.galaxyCodeLine = galaxyCode;
+            newCodeLine.lineNumber = number;
+            foreach (var select in match)
+            {
+                List<TextInStringTxt> selectItems = textList.Where(r => r.Id == select.ToString()).ToList();
+                TextInStringTxt selectItem;
+                if (selectItems.Count == 0)
+                {
+                    selectItem = new TextInStringTxt(-1, select.ToString() + "=");
+                }
+                else
+                {
+                    selectItem = selectItems.First();
+                }
+                selectItem.UseCount++;
+                newCodeLine.TextList.Add(selectItem);
+            }
+            return newCodeLine;
+        }
 
-    //    /// <summary>
-    //    /// 写入CSV文件
-    //    /// </summary>
-    //    /// <param name="csvWriter"></param>
-    //    public void CsvWrite(CsvWriter csvWriter, List<TextInStringTxt> list, ref int writeLine)
-    //    {
-    //        int textIndex = 1;
-    //        foreach (TextInStringTxt select in textList)
-    //        {
-    //            if (textIndex == 1)
-    //            {
-    //                csvWriter.WriteField(lineNumber);
-    //                csvWriter.WriteField(galaxyCodeLine);
-    //            }
-    //            else
-    //            {
-    //                csvWriter.WriteField("");
-    //                csvWriter.WriteField("");
-    //            }
-    //            csvWriter.WriteField(textIndex);
-    //            textIndex++;
-    //            csvWriter.WriteField(select.Id);
-    //            List<TextInStringTxt> exists = list.Where(r => r.FirstTextLineNumber != -1 && r.ZH_CN == select.ZH_CN && r != select).ToList();
-    //            if (exists.Count == 0)
-    //            {
-    //                csvWriter.WriteField(select.UseCountTemp);
-    //                if (select.UseCountTemp == 1)
-    //                {
-    //                    select.FirstTextLineNumber = writeLine;
-    //                    csvWriter.WriteField(writeLine);
-    //                    csvWriter.WriteField("");
-    //                    csvWriter.WriteField(select.Patch_CN);
-    //                    csvWriter.WriteField(select.ZH_CN);
-    //                }
-    //                else
-    //                {
-    //                    csvWriter.WriteField(select.FirstTextLineNumber);
-    //                    csvWriter.WriteField(select.ZH_CN);
-    //                    csvWriter.WriteField(select.Patch_CN);
-    //                    csvWriter.WriteField(select.Id);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                csvWriter.WriteField(select.UseCountTemp);
-    //                csvWriter.WriteField(exists.First().FirstTextLineNumber);
-    //                csvWriter.WriteField(select.ZH_CN);
-    //                csvWriter.WriteField(select.Patch_CN);
-    //                csvWriter.WriteField(exists.First().Id);
-    //            }
-    //            select.UseCountTemp++;
-    //            csvWriter.WriteField(select.EN_US);
-    //            csvWriter.NextRecord();
-    //            writeLine++;
-    //        }
-    //    }
-        
-    //    /// <summary>
-    //    /// 在Galaxy文件中的行号
-    //    /// </summary>
-    //    public int LineNumber
-    //    {
-    //        get
-    //        {
-    //            return lineNumber;
-    //        }
+        /// <summary>
+        /// 写入CSV文件
+        /// </summary>
+        /// <param name="csvWriter"></param>
+        public void CsvWrite(CsvWriter csvWriter, List<TextInStringTxt> list, ref int writeLine)
+        {
+            int textIndex = 1;
+            foreach (TextInStringTxt select in textList)
+            {
+                //TextId
+                csvWriter.WriteField(select.Id);
+                //TextType
+                csvWriter.WriteField(select.Type);
+                //InGalaxy
+                if (select.InGalaxy)
+                {
+                    csvWriter.WriteField("InGalaxy");
+                }
+                else
+                {
+                    csvWriter.WriteField("NotInGalaxy");
+                }
+                //GalaxyLine
+                csvWriter.WriteField(lineNumber);
+                //GalaxyTextIndex
+                csvWriter.WriteField(textIndex);
+                textIndex++;
+                //UpdataCN
+                if (select.UpdataCN)
+                {
+                    csvWriter.WriteField("UpdataCN");
+                }
+                else
+                {
+                    csvWriter.WriteField("NotUpdataCN");
+                }
+                //FirstLineNumberInCsv, TextRepeatCount, RepeatTextInZH-CN, PatchTextInZH-CN, NoRepeatZH-CN
+                List<TextInStringTxt> exists = list.Where(r => r.FirstTextLineNumber != -1 && r.ZH_CN == select.ZH_CN && r != select).ToList();
+                if (exists.Count == 0)
+                {
+                    if (select.UseCountTemp == 1)
+                    {
+                        select.FirstTextLineNumber = writeLine;
+                        csvWriter.WriteField(writeLine);
+                        csvWriter.WriteField(select.UseCountTemp);
+                        csvWriter.WriteField("");
+                        csvWriter.WriteField(select.Patch_CN);
+                        csvWriter.WriteField(select.ZH_CN);
+                    }
+                    else
+                    {
+                        csvWriter.WriteField(select.FirstTextLineNumber);
+                        csvWriter.WriteField(select.UseCountTemp);
+                        csvWriter.WriteField(select.ZH_CN);
+                        csvWriter.WriteField(select.Patch_CN);
+                        csvWriter.WriteField(select.Id);
+                    }
+                }
+                else
+                {
+                    csvWriter.WriteField(select.UseCountTemp);
+                    csvWriter.WriteField(exists.First().FirstTextLineNumber);
+                    csvWriter.WriteField(select.ZH_CN);
+                    csvWriter.WriteField(select.Patch_CN);
+                    csvWriter.WriteField(exists.First().Id);
+                }
+                select.UseCountTemp++;
+                //EN-US
+                csvWriter.WriteField(select.EN_US);
+                csvWriter.NextRecord();
+                writeLine++;
+            }
+        }
 
-    //        set
-    //        {
-    //            lineNumber = value;
-    //        }
-    //    }
+        /// <summary>
+        /// 在Galaxy文件中的行号
+        /// </summary>
+        public int LineNumber
+        {
+            get
+            {
+                return lineNumber;
+            }
 
-    //    /// <summary>
-    //    /// 此行Galaxy脚步内容
-    //    /// </summary>
-    //    public string GalaxyCodeLine
-    //    {
-    //        get
-    //        {
-    //            return galaxyCodeLine;
-    //        }
+            set
+            {
+                lineNumber = value;
+            }
+        }
 
-    //        set
-    //        {
-    //            galaxyCodeLine = value;
-    //        }
-    //    }
+        /// <summary>
+        /// 此行Galaxy脚步内容
+        /// </summary>
+        public string GalaxyCodeLine
+        {
+            get
+            {
+                return galaxyCodeLine;
+            }
 
-    //    /// <summary>
-    //    /// Galaxy语句中的Text列表
-    //    /// </summary>
-    //    public List<TextInStringTxt> TextList
-    //    {
-    //        get
-    //        {
-    //            return textList;
-    //        }
+            set
+            {
+                galaxyCodeLine = value;
+            }
+        }
 
-    //        set
-    //        {
-    //            textList = value;
-    //        }
-    //    }
-    //}
+        /// <summary>
+        /// Galaxy语句中的Text列表
+        /// </summary>
+        public List<TextInStringTxt> TextList
+        {
+            get
+            {
+                return textList;
+            }
+
+            set
+            {
+                textList = value;
+            }
+        }
+    }
 }
