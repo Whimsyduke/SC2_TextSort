@@ -312,6 +312,7 @@ namespace SC2_TextSort
                             string id = csvReader.GetField<string>("TextId");
                             string en_US = csvReader.GetField<string>("EN-US");
                             string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
+                            string zh_CNRepeat = csvReader.GetField<string>("RepeatTextInZH-CN");
                             bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
                             TextInStringTxt text = new TextInStringTxt(id, zh_CN, en_US);
                             if (isRepeat)
@@ -323,10 +324,15 @@ namespace SC2_TextSort
                                     {
                                         return;
                                     }
+                                    text.ZH_CN = zh_CNRepeat;
+                                    text.EN_US = en_US;
                                 }
-                                TextInStringTxt originText = originTextAll.First();
-                                text.ZH_CN = originText.ZH_CN;
-                                text.EN_US = originText.EN_US;
+                                else
+                                {
+                                    TextInStringTxt originText = originTextAll.First();
+                                    text.ZH_CN = originText.ZH_CN;
+                                    text.EN_US = originText.EN_US;
+                                }
                             }
                             else
                             {
@@ -392,16 +398,38 @@ namespace SC2_TextSort
                         TextInStringTxt text = texts.First();
                         if (text.HaveEN_US) continue;
 
-                        if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
+                        if (isRepeat)
                         {
-                            if (isRepeat)
+                            var originTextAll = textList.Where(r => r.Id == zh_CN);
+                            if (originTextAll.Count() == 0)
                             {
-                                text.ZH_CN = zh_CNRepeat;
+                                if (MessageBox.Show("在" + TextBox_InputPath.Text + "找不到ID为" + zh_CN + "的文本记录，作为ID为" + id + "的文本记录的同内容重复原始文本，是否继续？", "错误", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                                {
+                                    return;
+                                }
+                                if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
+                                {
+                                    text.ZH_CN = zh_CNRepeat;
+                                }
+                                text.EN_US = en_US;
                             }
                             else
                             {
+                                TextInStringTxt originText = originTextAll.First();
+                                if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
+                                {
+                                    text.ZH_CN = originText.ZH_CN;
+                                }
+                                text.EN_US = originText.EN_US;
+                            }
+                        }
+                        else
+                        {
+                            if (CheckBox_KeepZH_CN.IsChecked == true && CheckBox_RefreshZH_CN.IsChecked == true)
+                            {
                                 text.ZH_CN = zh_CN;
                             }
+                            text.EN_US = en_US;
                         }
                         text.EN_US = en_US;
                         text.HaveEN_US = true;
@@ -458,6 +486,7 @@ namespace SC2_TextSort
                     {
                         string id = csvReader.GetField<string>("TextId");
                         string zh_CN = csvReader.GetField<string>("NoRepeatZH-CN");
+                        string zh_CNRepeat = csvReader.GetField<string>("RepeatTextInZH-CN");
                         bool isRepeat = csvReader.GetField<string>("RepeatTextInZH-CN") != "";
                         var texts = textList.Where(r => r.Id == id);
                         if (texts.Count() <= 0)
@@ -477,9 +506,13 @@ namespace SC2_TextSort
                                 {
                                     return;
                                 }
+                                text.ZH_CN = zh_CNRepeat;
                             }
-                            TextInStringTxt originText = textList.Where(r => r.Id == zh_CN).First();
-                            text.ZH_CN = originText.ZH_CN;
+                            else
+                            {
+                                TextInStringTxt originText = textList.Where(r => r.Id == zh_CN).First();
+                                text.ZH_CN = originText.ZH_CN;
+                            }
                         }
                         else
                         {
